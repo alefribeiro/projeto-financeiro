@@ -1,0 +1,12 @@
+*.pyc
+media/*
+.env
+venv
+trace.log
+__pycache__
+logging.log
+*.xlsx
+.DS_Store
+celerybeat-schedule
+db.sqlite3
+*.sqlite3

@@ -5,7 +5,7 @@ class Estado(models.Model):
     uf = models.CharField(max_length=2, blank=False, null=False)
 
     def __str__(self):
-        return self.nome
+        return f'{self.nome} - {self.uf}'
 
 
 class Cidade(models.Model):

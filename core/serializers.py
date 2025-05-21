@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from core.models import Fornecedor
 import requests
-import json
 
 
 class FornecedorSerializer(serializers.ModelSerializer):
@@ -14,6 +13,7 @@ class FornecedorSerializer(serializers.ModelSerializer):
         response_cnpj = requests.get(f'https://receitaws.com.br/v1/cnpj/{validated_data.get('cnpj')}')  
 
         if response_cnpj.status_code == 200:
+
             dados_convertidos = response_cnpj.json()
             
             validated_data['logradouro'] = dados_convertidos.get('logradouro', '')

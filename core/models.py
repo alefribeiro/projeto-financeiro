@@ -26,6 +26,8 @@ class Fornecedor(models.Model):
     telefone = models.CharField(max_length=15, blank=False, null=False)
     cep = models.CharField(max_length=8, blank=True, null=True)
     email = models.EmailField(max_length=100, blank=True, null=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f'{self.nome} - {self.cnpj}'

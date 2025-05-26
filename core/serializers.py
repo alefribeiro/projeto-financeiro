@@ -9,17 +9,25 @@ class EstadoSerializer(serializers.ModelSerializer):
 
 
 class CidadeSerializer(serializers.ModelSerializer):
-    estado = EstadoSerializer(read_only=True)
+    estado = EstadoSerializer()
     class Meta:
         model = Cidade
         fields = ['nome', 'estado']
 
 class FornecedorSerializer(serializers.ModelSerializer):
-    cidade = CidadeSerializer(read_only=True)
+    cidade = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Fornecedor
         fields = '__all__' 
+
+    def get_cidade(self, obj):
+        return CidadeSerializer(obj.cidade).data
+    
+    def validate(self, attrs):
+        print(attrs)
+        return super().validate(attrs)
+    
 
     def create(self, validated_data):
         response_cnpj = requests.get(f'https://receitaws.com.br/v1/cnpj/{validated_data.get('cnpj')}')  

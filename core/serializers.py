@@ -1,9 +1,21 @@
 from rest_framework import serializers
-from core.models import Fornecedor
+from core.models import Fornecedor, Estado, Cidade
 import requests
 
+class EstadoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Estado
+        fields = ['nome', 'uf']
+
+
+class CidadeSerializer(serializers.ModelSerializer):
+    estado = EstadoSerializer(read_only=True)
+    class Meta:
+        model = Cidade
+        fields = ['nome', 'estado']
 
 class FornecedorSerializer(serializers.ModelSerializer):
+    cidade = CidadeSerializer(read_only=True)
     
     class Meta:
         model = Fornecedor

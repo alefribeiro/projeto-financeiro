@@ -11,3 +11,6 @@ class FornecedorRepository(BaseRepository):
     
     def get_by_id(self, pk):
         return self.model.objects.get(pk=pk)
+    
+    def create(self, **kwargs):
+        return self.model.objects.create(**kwargs)

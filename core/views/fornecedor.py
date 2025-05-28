@@ -15,7 +15,7 @@ class FornecedorView(APIView):
             try:
                 fornecedor = self.fornecedor_repository.get_by_id(pk)
             except Fornecedor.DoesNotExist:
-                return JsonResponse({'error': 'Fornecedor not found'}, status=404)
+                return JsonResponse({'error': 'Fornecedor não existe'}, status=404)
             serializer = FornecedorSerializer(fornecedor)
             return JsonResponse(serializer.data)
         

@@ -14,3 +14,10 @@ class FornecedorRepository(BaseRepository):
     
     def create(self, **kwargs):
         return self.model.objects.create(**kwargs)
+    
+    def update(self, pk, **kwargs):
+        fornecedor = self.get_by_id(pk)
+        for key, value in kwargs.items():
+            setattr(fornecedor, key, value)
+        fornecedor.save()
+        return fornecedor

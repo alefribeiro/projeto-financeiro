@@ -15,7 +15,7 @@ class FornecedorView(APIView):
             try:
                 fornecedor = self.fornecedor_repository.get_by_id(pk)
             except Fornecedor.DoesNotExist:
-                return JsonResponse({'error': 'Fornecedor não existe'}, status=404)
+                return JsonResponse({'error': 'Fornecedor não encontrado'}, status=404)
             serializer = FornecedorSerializer(fornecedor)
             return JsonResponse(serializer.data)
         
@@ -39,3 +39,28 @@ class FornecedorView(APIView):
            
             
         return JsonResponse(serializer.errors, status=400)
+
+    @transaction.atomic
+    def put(self, request, pk):
+        try:
+            fornecedor = self.fornecedor_repository.get_by_id(pk)
+        except Fornecedor.DoesNotExist:
+            return JsonResponse({'error': 'Fornecedor não encontrado'}, status=404)
+
+        data = JSONParser().parse(request)
+        telefones_data = data.pop('telefones', [])
+
+        serializer = FornecedorSerializer(fornecedor, data=data, partial=True)
+        
+        if serializer.is_valid():
+            fornecedor_atualizado = serializer.save()
+
+            fornecedor_atualizado.telefones.all().delete()
+
+            for telefone in telefones_data:
+                fornecedor_atualizado.telefones.create(telefone=telefone)
+
+            return JsonResponse(FornecedorSerializer(fornecedor_atualizado).data, status=200)
+
+        return JsonResponse(serializer.errors, status=400)
+        

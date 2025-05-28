@@ -4,20 +4,22 @@ from core.models.fornecedor import Fornecedor
 from core.serializers.fornecedor import FornecedorSerializer
 from rest_framework.views import APIView
 from django.db import IntegrityError, transaction
+from core.repository.fornecedor import FornecedorRepository
 
 
 class FornecedorView(APIView):
+    fornecedor_repository = FornecedorRepository()
 
     def get (self, request, pk=None):
         if pk:
             try:
-                fornecedor = Fornecedor.objects.get(pk=pk)
+                fornecedor = self.fornecedor_repository.get_by_id(pk)
             except Fornecedor.DoesNotExist:
                 return JsonResponse({'error': 'Fornecedor not found'}, status=404)
             serializer = FornecedorSerializer(fornecedor)
             return JsonResponse(serializer.data)
         
-        fornecedor = Fornecedor.objects.all()
+        fornecedor = self.fornecedor_repository.get_all()
         serializer = FornecedorSerializer(fornecedor, many=True)
         return JsonResponse(serializer.data, safe=False)
     

@@ -47,14 +47,14 @@ class FornecedorSerializer(serializers.ModelSerializer):
         return self.fornecedor_repository.create(**validated_data)
     
     def update(self, instance, validated_data):
-        telefones_data = self.initial_data.get('telefones', [])
+        telefones = self.initial_data.get('telefones', [])
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
         instance.telefones.all().delete()
-        for telefone in telefones_data:
+        for telefone in telefones:
             instance.telefones.create(telefone=telefone)
 
         return instance

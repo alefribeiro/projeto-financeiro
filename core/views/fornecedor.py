@@ -48,7 +48,7 @@ class FornecedorView(APIView):
             return JsonResponse({'error': 'Fornecedor não encontrado'}, status=404)
 
         data = JSONParser().parse(request)
-        telefones_data = data.pop('telefones', [])
+        telefones = data.pop('telefones', [])
 
         serializer = FornecedorSerializer(fornecedor, data=data, partial=True)
         
@@ -57,7 +57,7 @@ class FornecedorView(APIView):
 
             fornecedor_atualizado.telefones.all().delete()
 
-            for telefone in telefones_data:
+            for telefone in telefones:
                 fornecedor_atualizado.telefones.create(telefone=telefone)
 
             return JsonResponse(FornecedorSerializer(fornecedor_atualizado).data, status=200)

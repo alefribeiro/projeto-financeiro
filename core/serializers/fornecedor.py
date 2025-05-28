@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models.fornecedor import Fornecedor, Estado, Cidade
+from core.models.fornecedor import Fornecedor, Estado, Cidade, TelefonesFornecedor
 import requests
 
 class EstadoSerializer(serializers.ModelSerializer):
@@ -14,11 +14,16 @@ class CidadeSerializer(serializers.ModelSerializer):
         model = Cidade
         fields = ['nome', 'estado']
 
+class TelefonesFornecedorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TelefonesFornecedor
+        fields = ['telefone']
 class FornecedorSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['cidade'] = CidadeSerializer(instance.cidade).data
+        rep['telefones'] = TelefonesFornecedorSerializer(instance.telefones.all(), many=True).data
         return rep
     
     class Meta:

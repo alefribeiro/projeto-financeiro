@@ -20,22 +20,20 @@ class FornecedorView(APIView):
         fornecedor = Fornecedor.objects.all()
         serializer = FornecedorSerializer(fornecedor, many=True)
         return JsonResponse(serializer.data, safe=False)
-
+    
+    @transaction.atomic
     def post(self, request):  
         data = JSONParser().parse(request)
 
-        telefones = data.pop('telefones', [])
+        telefones = data.pop('telefones')
         serializer = FornecedorSerializer(data=data)
 
         if serializer.is_valid():
-            try:
-                with transaction.atomic():
-                    fornecedor = serializer.save()
-                    for telefone in telefones:
-                        fornecedor.telefones.create(telefone=telefone)
-                return JsonResponse(serializer.data, status=201)
-            except IntegrityError:
-                return JsonResponse({'error': 'Fornecedor with this CNPJ already exists.'}, status=400)
-            serializer.save()
+            fornecedor = serializer.save()
+
+            for telefone in telefones:
+                fornecedor.telefones.create(telefone=telefone)
+            return JsonResponse(serializer.data, status=201)
+           
             
         return JsonResponse(serializer.errors, status=400)

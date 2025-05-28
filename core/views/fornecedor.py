@@ -1,9 +1,9 @@
 from django.http import  JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from core.models.fornecedor import Fornecedor
 from core.serializers.fornecedor import FornecedorSerializer
 from rest_framework.views import APIView
+from django.db import IntegrityError, transaction
 
 
 class FornecedorView(APIView):
@@ -23,8 +23,19 @@ class FornecedorView(APIView):
 
     def post(self, request):  
         data = JSONParser().parse(request)
+
+        telefones = data.pop('telefones', [])
         serializer = FornecedorSerializer(data=data)
+
         if serializer.is_valid():
+            try:
+                with transaction.atomic():
+                    fornecedor = serializer.save()
+                    for telefone in telefones:
+                        fornecedor.telefones.create(telefone=telefone)
+                return JsonResponse(serializer.data, status=201)
+            except IntegrityError:
+                return JsonResponse({'error': 'Fornecedor with this CNPJ already exists.'}, status=400)
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            
         return JsonResponse(serializer.errors, status=400)

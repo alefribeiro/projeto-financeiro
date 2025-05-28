@@ -1,7 +1,8 @@
 from django.urls import path
-from core import views
+from core.views.fornecedor import FornecedorView
+
 
 urlpatterns = [
-    path('fornecedor/', views.fornecedor_list),
-    # path('snippets/<int:pk>/', views.snippet_detail),
+    path('fornecedor/', FornecedorView.as_view(), name='fornecedor_list'),
+    path('fornecedor/<int:pk>/', FornecedorView.as_view(), name='fornecedor_detail'),
 ]

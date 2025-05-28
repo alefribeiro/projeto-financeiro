@@ -15,7 +15,7 @@ class Cidade(models.Model):
     def __str__(self):
         return f'{self.nome} - {self.estado.uf}'
 
-class Fornecedor(models.Model):
+class FornecedorModel(models.Model):
     nome = models.CharField(max_length=100, blank=False, null=False)
     cnpj = models.CharField(max_length=14, blank=True, null=True)
     cidade = models.ForeignKey(Cidade, on_delete=models.PROTECT)

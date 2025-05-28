@@ -1,5 +1,5 @@
 from django.contrib import admin
-from core.models import (Estado, Cidade, Fornecedor)
+from core.models.fornecedor import (Estado, Cidade, FornecedorModel)
 
 class EstadoAdmin(admin.ModelAdmin):
     pass
@@ -12,4 +12,4 @@ class FornecedorAdmin(admin.ModelAdmin):
 
 admin.site.register(Estado, EstadoAdmin)
 admin.site.register(Cidade, CidadeAdmin)
-admin.site.register(Fornecedor, FornecedorAdmin)
+admin.site.register(FornecedorModel, FornecedorAdmin)

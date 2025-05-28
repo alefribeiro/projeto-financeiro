@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import Fornecedor, Estado, Cidade
+from core.models.fornecedor import FornecedorModel, Estado, Cidade
 import requests
 
 class EstadoSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class FornecedorSerializer(serializers.ModelSerializer):
         return rep
     
     class Meta:
-        model = Fornecedor
+        model = FornecedorModel
         fields = '__all__'    
 
     def create(self, validated_data):
@@ -38,6 +38,6 @@ class FornecedorSerializer(serializers.ModelSerializer):
             validated_data['bairro'] = dados_convertidos.get('bairro', '')
             validated_data['cep'] = dados_convertidos.get('cep', '')
         
-        return Fornecedor.objects.create(**validated_data)
+        return FornecedorModel.objects.create(**validated_data)
 
     

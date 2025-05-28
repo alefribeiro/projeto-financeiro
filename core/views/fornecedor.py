@@ -1,7 +1,7 @@
 from django.http import  JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from core.models.fornecedor import FornecedorModel
+from core.models.fornecedor import Fornecedor
 from core.serializers.fornecedor import FornecedorSerializer
 from rest_framework.views import APIView
 
@@ -11,13 +11,13 @@ class FornecedorView(APIView):
     def get (self, request, pk=None):
         if pk:
             try:
-                fornecedor = FornecedorModel.objects.get(pk=pk)
-            except FornecedorModel.DoesNotExist:
+                fornecedor = Fornecedor.objects.get(pk=pk)
+            except Fornecedor.DoesNotExist:
                 return JsonResponse({'error': 'Fornecedor not found'}, status=404)
             serializer = FornecedorSerializer(fornecedor)
             return JsonResponse(serializer.data)
         
-        fornecedor = FornecedorModel.objects.all()
+        fornecedor = Fornecedor.objects.all()
         serializer = FornecedorSerializer(fornecedor, many=True)
         return JsonResponse(serializer.data, safe=False)
 

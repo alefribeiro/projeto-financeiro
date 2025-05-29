@@ -1,4 +1,4 @@
-from core.models.fornecedor import Fornecedor
+from core.models.fornecedor import Fornecedor, TelefonesFornecedor
 from core.repository.base import BaseRepository
 
 class FornecedorRepository(BaseRepository):
@@ -21,3 +21,18 @@ class FornecedorRepository(BaseRepository):
             setattr(fornecedor, key, value)
         fornecedor.save()
         return fornecedor
+    
+    def listar_telefones_por_fornecedor(fornecedor):
+        return fornecedor.telefones.all()
+
+    
+    def criar_telefone(fornecedor, numero):
+        return TelefonesFornecedor.objects.create(fornecedor=fornecedor, telefone=numero)
+
+    
+    def atualizar_telefones(telefones):
+        return TelefonesFornecedor.objects.bulk_update(telefones, ['telefone'])
+
+    
+    def deletar_telefones_por_ids(fornecedor, ids):
+        return fornecedor.telefones.filter(id__in=ids).delete()

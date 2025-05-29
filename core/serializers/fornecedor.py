@@ -18,7 +18,7 @@ class CidadeSerializer(serializers.ModelSerializer):
 class TelefonesFornecedorSerializer(serializers.ModelSerializer):
     class Meta:
         model = TelefonesFornecedor
-        fields = ['telefone']
+        fields = ['id', 'telefone'] 
 class FornecedorSerializer(serializers.ModelSerializer):
     fornecedor_repository = FornecedorRepository()
     def to_representation(self, instance):
@@ -47,14 +47,42 @@ class FornecedorSerializer(serializers.ModelSerializer):
         return self.fornecedor_repository.create(**validated_data)
     
     def update(self, instance, validated_data):
-        telefones = self.initial_data.get('telefones', [])
+        
+        
+        dados_telefones = self.initial_data.get('telefones', [])
+        
+        print(f"Dados recebidos para atualização: {dados_telefones}")
+       
+        fornecedor = super().update(instance, validated_data)
+        
+        mapa_telefones_existentes = {tel.id: tel for tel in fornecedor.telefones.all()}
+        
+        telefones_para_atualizar = []
+        ids_telefones_recebidos = set() 
 
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
+        for dados_item_telefone in dados_telefones:
+            id_telefone = dados_item_telefone.get('id')
+            
+            if id_telefone and id_telefone in mapa_telefones_existentes:
+                
+                ids_telefones_recebidos.add(id_telefone)
+                objeto_telefone = mapa_telefones_existentes[id_telefone]
+                
+                
+                objeto_telefone.telefone = dados_item_telefone.get('numero', objeto_telefone.telefone)
+                telefones_para_atualizar.append(objeto_telefone)
+            else:
+                FornecedorRepository.criar_telefone(fornecedor, dados_item_telefone['numero'])
 
-        instance.telefones.all().delete()
-        for telefone in telefones:
-            instance.telefones.create(telefone=telefone)
+        
+        if telefones_para_atualizar:
+            FornecedorRepository.atualizar_telefones(telefones_para_atualizar)
 
-        return instance
+        
+        
+        ids_telefones_para_deletar = set(mapa_telefones_existentes.keys()) - ids_telefones_recebidos
+        
+        if ids_telefones_para_deletar:
+            FornecedorRepository.deletar_telefones_por_ids(fornecedor, ids_telefones_para_deletar)
+
+        return fornecedor

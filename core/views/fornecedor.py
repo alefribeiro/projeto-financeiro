@@ -7,6 +7,7 @@ from django.db import IntegrityError, transaction
 from core.repository.fornecedor import FornecedorRepository
 
 
+
 class FornecedorView(APIView):
     fornecedor_repository = FornecedorRepository()
 
@@ -48,17 +49,11 @@ class FornecedorView(APIView):
             return JsonResponse({'error': 'Fornecedor não encontrado'}, status=404)
 
         data = JSONParser().parse(request)
-        telefones = data.pop('telefones', [])
 
         serializer = FornecedorSerializer(fornecedor, data=data, partial=True)
         
         if serializer.is_valid():
             fornecedor_atualizado = serializer.save()
-
-            fornecedor_atualizado.telefones.all().delete()
-
-            for telefone in telefones:
-                fornecedor_atualizado.telefones.create(telefone=telefone)
 
             return JsonResponse(FornecedorSerializer(fornecedor_atualizado).data, status=200)
 

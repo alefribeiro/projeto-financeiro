@@ -48,10 +48,7 @@ class FornecedorSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         
-        
-        dados_telefones = self.initial_data.get('telefones', [])
-        
-        print(f"Dados recebidos para atualização: {dados_telefones}")
+        dados_telefones_recebidos = self.initial_data.get('telefones', [])
        
         fornecedor = super().update(instance, validated_data)
         
@@ -60,14 +57,13 @@ class FornecedorSerializer(serializers.ModelSerializer):
         telefones_para_atualizar = []
         ids_telefones_recebidos = set() 
 
-        for dados_item_telefone in dados_telefones:
+        for dados_item_telefone in dados_telefones_recebidos:
             id_telefone = dados_item_telefone.get('id')
             
             if id_telefone and id_telefone in mapa_telefones_existentes:
                 
                 ids_telefones_recebidos.add(id_telefone)
                 objeto_telefone = mapa_telefones_existentes[id_telefone]
-                
                 
                 objeto_telefone.telefone = dados_item_telefone.get('numero', objeto_telefone.telefone)
                 telefones_para_atualizar.append(objeto_telefone)

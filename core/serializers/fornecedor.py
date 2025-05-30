@@ -39,7 +39,7 @@ class FornecedorSerializer(serializers.ModelSerializer):
             dados_convertidos = response_cnpj.json()
             
             validated_data['logradouro'] = dados_convertidos.get('logradouro', '')
-            validated_data['numero'] = dados_convertidos.get('numero', '')  
+            validated_data['telefone'] = dados_convertidos.get('telefone', '')  
             validated_data['complemento'] = dados_convertidos.get('complemento', '')
             validated_data['bairro'] = dados_convertidos.get('bairro', '')
             validated_data['cep'] = dados_convertidos.get('cep', '')
@@ -65,10 +65,10 @@ class FornecedorSerializer(serializers.ModelSerializer):
                 ids_telefones_recebidos.add(id_telefone)
                 objeto_telefone = mapa_telefones_existentes[id_telefone]
                 
-                objeto_telefone.telefone = dados_item_telefone.get('numero', objeto_telefone.telefone)
+                objeto_telefone.telefone = dados_item_telefone.get('telefone', objeto_telefone.telefone)
                 telefones_para_atualizar.append(objeto_telefone)
             else:
-                FornecedorRepository.criar_telefone(fornecedor, dados_item_telefone['numero'])
+                FornecedorRepository.criar_telefone(fornecedor, dados_item_telefone['telefone'])
 
         
         if telefones_para_atualizar:

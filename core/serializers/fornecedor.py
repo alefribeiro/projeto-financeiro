@@ -39,7 +39,6 @@ class FornecedorSerializer(serializers.ModelSerializer):
             dados_convertidos = response_cnpj.json()
             
             validated_data['logradouro'] = dados_convertidos.get('logradouro', '')
-            validated_data['telefone'] = dados_convertidos.get('telefone', '')  
             validated_data['complemento'] = dados_convertidos.get('complemento', '')
             validated_data['bairro'] = dados_convertidos.get('bairro', '')
             validated_data['cep'] = dados_convertidos.get('cep', '')

@@ -1,0 +1,32 @@
+# docker-compose.yml
+
+version: "3.8"
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      - DJANGO_SETTINGS_MODULE=financeiro.settings # Garanta que suas settings estão sendo usadas
+
+  celery_worker:
+    build: .
+    command: celery -A financeiro worker -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - web # Opcional, mas útil se o worker precisar do banco de dados do Django
+    environment:
+      - DJANGO_SETTINGS_MODULE=financeiro.settings
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from core.models.fornecedor import Fornecedor, Estado, Cidade, TelefonesFornecedor
 import requests
 from core.repository.fornecedor import FornecedorRepository
+from core.tasks.teste import minha_primeira_tarefa
 
 class EstadoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +33,7 @@ class FornecedorSerializer(serializers.ModelSerializer):
         fields = '__all__'    
 
     def create(self, validated_data):
-        response_cnpj = requests.get(f'https://receitaws.com.br/v1/cnpj/{validated_data.get('cnpj')}')  
+        response_cnpj = requests.get(f'https://receitaws.com.br/v1/cnpj/{validated_data.get("cnpj")}')  
 
         if response_cnpj.status_code == 200:
 

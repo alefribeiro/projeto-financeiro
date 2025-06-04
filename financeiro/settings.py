@@ -55,6 +55,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Configurações do Celery
+CELERY_BROKER_URL = 'redis://redis:6379/0'  # URL do broker (Redis)
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0' # Onde os resultados das tarefas são armazenados (opcional)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Sao_Paulo' # Ou seu fuso horário
+CELERY_ENABLE_UTC = True
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]

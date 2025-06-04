@@ -30,3 +30,18 @@ services:
     image: redis:6-alpine
     ports:
       - "6379:6379"
+  flower: # NOVO SERVIÇO PARA O FLOWER
+    build: .
+    command: celery -A financeiro flower --port=5555 --broker=redis://redis:6379/0
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555" # Porta para acessar a interface web do Flower
+    depends_on:
+      - redis
+      - celery_worker # Flower precisa que o worker e o broker estejam rodando
+    environment:
+      - DJANGO_SETTINGS_MODULE=financeiro.settings
+      # Opcional: Se quiser autenticação para o Flower (RECOMENDADO PARA PRODUÇÃO)
+      # - CELERY_FLOWER_USER=admin
+      # - CELERY_FLOWER_PASSWORD=password

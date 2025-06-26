@@ -1,5 +1,13 @@
 from django.db import models
 
+
+class Base(models.Model):
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        abstract = True
+
 class Estado(models.Model):
     nome = models.CharField(max_length=100, blank=False, null=False)
     uf = models.CharField(max_length=2, blank=False, null=False)
@@ -9,8 +17,8 @@ class Estado(models.Model):
 
 
 class Cidade(models.Model):
-    nome = models.CharField(max_length=100)
-    estado = models.ForeignKey(Estado, on_delete=models.PROTECT)
+    nome = models.CharField(max_length=100, blank=False, null=False)
+    estado = models.ForeignKey(Estado, on_delete=models.PROTECT, blank=False, null=True)
 
     def __str__(self):
         return f'{self.nome} - {self.estado.uf}'

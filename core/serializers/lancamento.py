@@ -1,39 +1,36 @@
 from datetime import timedelta
 from rest_framework import serializers
-from core.models.lancamento import (
-    Lancamento,
-    
-)
+from core.models.lancamento import Lancamento
+
 
 class LancamentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lancamento
         fields = '__all__'
-        
+
     def validate(self, attrs):
-        valor = attrs['valor']
-        valor_efetivado = attrs['valor_efetivado']
+        valor = attrs.get('valor')
+        valor_efetivado = attrs.get('valor_efetivado')
+        data_efetivacao = attrs.get('data_efetivacao')
+        vencimento = attrs.get('vencimento')
 
-        
-        if valor_efetivado and valor_efetivado < valor:
-            print('faça uma copia')
-
-        if attrs['data_efetivacao'] > attrs['vencimento']:
+        if data_efetivacao and data_efetivacao > vencimento:
             raise serializers.ValidationError(
                 "A data de efetivação não pode ser maior que o vencimento."
             )
-        
+
         if valor < 0 or (valor_efetivado is not None and valor_efetivado < 0):
             raise serializers.ValidationError(
                 "O valor e o valor efetivado não podem ser negativos."
             )
-        
+
         return attrs
-    
+
     def create(self, validated_data):
+        repeticoes = validated_data.pop('repeticoes', 5)
         valor = validated_data.get('valor')
         valor_efetivado = validated_data.get('valor_efetivado')
-        repeticoes = validated_data.pop('repeticoes', 5)
+        vencimento = validated_data.get('vencimento')
 
         
         lancamento_principal = Lancamento.objects.create(**validated_data)
@@ -44,32 +41,31 @@ class LancamentoSerializer(serializers.ModelSerializer):
         if valor_efetivado is not None and valor_efetivado < valor:
             restante = valor - valor_efetivado
             novos_lancamentos.append(Lancamento(
-                descricao=validated_data['descricao'],
-                forma_pagamento=validated_data['forma_pagamento'],
-                tipo=validated_data['tipo'],
-                categoria=validated_data['categoria'],
-                valor=restante,
-                vencimento=validated_data['vencimento'] + timedelta(days=30),
-                fornecedor=validated_data['fornecedor'],
+                **self._build_lancamento_data(validated_data, restante, vencimento + timedelta(days=30))
             ))
 
-      
+        
         for i in range(1, repeticoes):
             novos_lancamentos.append(Lancamento(
-                descricao=validated_data['descricao'],
-                forma_pagamento=validated_data['forma_pagamento'],
-                tipo=validated_data['tipo'],
-                categoria=validated_data['categoria'],
-                valor=validated_data['valor'],
-                vencimento=validated_data['vencimento'] + timedelta(days=30 * i),
-                fornecedor=validated_data['fornecedor'],
+                **self._build_lancamento_data(validated_data, valor, vencimento + timedelta(days=30 * i))
             ))
 
         if novos_lancamentos:
             Lancamento.objects.bulk_create(novos_lancamentos)
 
         return lancamento_principal
-    
+
+    def _build_lancamento_data(self, base_data, valor, vencimento):
+        return {
+            'descricao': base_data['descricao'],
+            'forma_pagamento': base_data['forma_pagamento'],
+            'tipo': base_data['tipo'],
+            'categoria': base_data['categoria'],
+            'valor': valor,
+            'vencimento': vencimento,
+            'fornecedor': base_data['fornecedor'],
+        }
+
         
     # Data de efetivação não pode ser maior que o vencimento
 

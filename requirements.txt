@@ -5,3 +5,4 @@ redis
 django-cors-headers
 requests
 flower
+python-decouple
